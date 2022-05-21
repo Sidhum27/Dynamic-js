@@ -1,0 +1,78 @@
+//https://stackoverflow.com/questions/42599031/close-popup-containing-iframe-on-click-of-button-from-iframe
+
+function incidentClose() {
+var modal = document.getElementById("modal");
+modal.style.display = "none";
+}
+function incidentOpen(id) {
+if (document.contains(document.getElementById("modal"))) {
+document.getElementById("modal").remove();
+} const modal = document.createElement('div');
+
+modal.classList.add('modal');
+modal.id = 'modal';
+modal.style.display = "block"; modal.innerHTML = `
+<div id="modalContent" class="modal-content">
+<iframe id="rspndr" src="http://localhost:4200/invoke/` + id + '?loc=' + window.location + `" width="600px" height="600px" style="border:0;" allowfullscreen="" loading="lazy" allowtransparency=""></iframe>
+</div>
+`;
+document.body.appendChild(modal);
+//document.body.innerHTML = document.body.innerHTML + modal;
+createModalCss();
+}
+function createModalCss() {
+var style = document.createElement('style');
+style.type = 'text/css';
+style.innerHTML = `.modal {
+display: none; /* Hidden by default */
+position: fixed; /* Stay in place */
+z-index: 1; /* Sit on top */
+left: 0;
+top: 0;
+width: 100%; /* Full width */
+height: 600px; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0, 0, 0); /* Fallback color */
+background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */ }
+/* Modal Content/Box */
+.modal-content {
+background-color: none;
+margin: 15% auto; /*15% from the top and centered */
+padding: 0px;
+width: 600px; /* Could be more or less, depending on screen size */
+} /* The Close Button */
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+} .close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}`; document.getElementsByTagName('head')[0].appendChild(style); document.getElementById('modal').className = 'modal';
+document.getElementById('modalContent').className = 'modal-content';
+}
+window.addEventListener('message', receiveMessage, false);function receiveMessage(event) {
+var origin = event.origin || event.originalEvent.origin;
+//if (origin.indexOf(window.location) >= 0) // check if message received from intended sender
+//{
+if (event.data == "incidentclose") // check if data received is in correct format
+{
+this.incidentClose();
+}
+else if (event.data == "iframeresize") {
+this.resizeIframe('200px');
+}
+else { // data received is malacious
+return;
+} //} else { // message is not received from intended sender
+// return;
+//}
+}
+function resizeIframe(height) {
+var iframe = document.getElementById("rspndr");
+iframe.style.height = height;
+}
+
